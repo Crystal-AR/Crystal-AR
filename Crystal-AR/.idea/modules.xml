@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Crystal-AR.iml" filepath="$PROJECT_DIR$/Crystal-AR.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/crystal-ar/crystal-ar.iml" filepath="$PROJECT_DIR$/crystal-ar/crystal-ar.iml" />
+    </modules>
+  </component>
+</project>
