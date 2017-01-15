@@ -3,6 +3,7 @@ package com.crystal_ar.crystal_ar;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.util.Log;
 
 import java.net.MalformedURLException;
 import java.net.URL;
