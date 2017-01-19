@@ -26,7 +26,6 @@ public class CrystalAR {
         private String datapath = ""; //path to folder containing language data file
         private String OCRresult;     // result from processImage
         private Context appContext;      //context of the user's application
-        private String language = "";
         Word[] words;
 
         /*
