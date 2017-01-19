@@ -6,8 +6,10 @@
 2. Place your Tesseract eng.traineddata file in *tessdata*.
 3. Add *compile 'com.rmtheis:tess-two:5.4.1'* to your application's gradle file.
 
+Languages supported by Tesseract can be found at [tesseract-ocr](https://github.com/tesseract-ocr/tessdata)
+
 ### Setup Crystal-AR
 1. File > New > New Module > Import .AAR Package
 2. Make sure *':crystal-ar-release'* is included in settings.gradle.
 3. Add *compile project(":crystal-ar-release")* to your application's dependencies list.
-4. You are now ready to start using Crystal-AR! Simply import the library in your Java file using *'import com.crystal_ar.crystal_ar.*'* and initialize it with *'new CrystalAR(context)'*.
+4. You are now ready to start using Crystal-AR! Simply import the library in your Java file using 'import com.crystal_ar.crystal_ar.*' and initialize it with 'new CrystalAR(context)'.

@@ -82,6 +82,15 @@ public class CrystalAR {
             }
         }
 
+        /*
+         * Sets the language of Tesseract.
+         * @param language - language(s) for Tesseract to track. For multiple languages add a '+'
+         *                   between each language. Example: "eng+deu" for English and German.
+         */
+        public void setLanguage(String language) {
+            mTess.init(datapath, language);
+        }
+
         public String getPrimitiveString() {
             return OCRresult;
         }
