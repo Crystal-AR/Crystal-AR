@@ -52,13 +52,14 @@ public class CrystalAR {
         private void copyFile(String lang) {
             try {
                 //location we want the file to be at
-                String filepath = datapath + "/tessdata/" + lang + ".traineddata";
+                String tessdataLangFile = "tessdata/" + lang + ".traineddata";
+                String filepath = datapath + "/" + tessdataLangFile;
 
                 //get access to AssetManager
                 AssetManager assetManager = appContext.getAssets();
 
                 //open byte streams for reading/writing
-                InputStream instream = assetManager.open("tessdata/" + lang + ".traineddata");
+                InputStream instream = assetManager.open(tessdataLangFile);
                 OutputStream outstream = new FileOutputStream(filepath);
 
                 //copy the file to the location specified by filepath
