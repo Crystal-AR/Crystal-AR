@@ -26,6 +26,7 @@ public class CrystalAR {
         private String datapath = ""; //path to folder containing language data file
         private String OCRresult;     // result from processImage
         private Context appContext;      //context of the user's application
+        private String language = "";
         Word[] words;
 
         /*
@@ -34,21 +35,31 @@ public class CrystalAR {
         public CrystalAR(Context context) {
             appContext = context;
             datapath = appContext.getFilesDir()+ "/tesseract/";
-            checkFile(new File(datapath + "tessdata/"));
             mTess = new TessBaseAPI();
-            mTess.init(datapath, "eng");
         }
 
-        private void copyFile() {
+        /*
+        * Sets the language of Tesseract.
+        * @param language - language(s) for Tesseract to track. For multiple languages add a '+'
+        *                   between each language. Example: "eng+deu" for English and German.
+        */
+        public void setLanguage(String language) {
+            for (String lang: language.split("\\+")) {
+                checkFile(new File(datapath + "tessdata/"), lang);
+            }
+            mTess.init(datapath, language);
+        }
+
+        private void copyFile(String lang) {
             try {
                 //location we want the file to be at
-                String filepath = datapath + "/tessdata/eng.traineddata";
+                String filepath = datapath + "/tessdata/" + lang + ".traineddata";
 
                 //get access to AssetManager
                 AssetManager assetManager = appContext.getAssets();
 
                 //open byte streams for reading/writing
-                InputStream instream = assetManager.open("tessdata/eng.traineddata");
+                InputStream instream = assetManager.open("tessdata/" + lang + ".traineddata");
                 OutputStream outstream = new FileOutputStream(filepath);
 
                 //copy the file to the location specified by filepath
@@ -68,28 +79,19 @@ public class CrystalAR {
             }
         }
 
-        private void checkFile(File dir) {
+        private void checkFile(File dir, String lang) {
             //directory does not exist, but we can successfully create it
             if (!dir.exists() && dir.mkdirs()) {
-                copyFile();
+                copyFile(lang);
             }
             //The directory exists, but there is no data file in it
             if (dir.exists()) {
-                String datafilepath = datapath + "/tessdata/eng.traineddata";
+                String datafilepath = datapath + "/tessdata/"+ lang + ".traineddata";
                 File datafile = new File(datafilepath);
                 if (!datafile.exists()) {
-                    copyFile();
+                    copyFile(lang);
                 }
             }
-        }
-
-        /*
-         * Sets the language of Tesseract.
-         * @param language - language(s) for Tesseract to track. For multiple languages add a '+'
-         *                   between each language. Example: "eng+deu" for English and German.
-         */
-        public void setLanguage(String language) {
-            mTess.init(datapath, language);
         }
 
         public String getPrimitiveString() {

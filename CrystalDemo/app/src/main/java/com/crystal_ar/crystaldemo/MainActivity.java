@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
         //initialize Crystal-AR
         Context context = getApplicationContext();
         CrystalAR crystalAR = new CrystalAR(context);
+        crystalAR.setLanguage("eng+deu");
 
         image = BitmapFactory.decodeResource(getResources(), R.drawable.test_image);
         //josh.processImage(image);
