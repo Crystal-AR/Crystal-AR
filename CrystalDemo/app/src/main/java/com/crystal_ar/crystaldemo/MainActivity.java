@@ -1,5 +1,6 @@
 package com.crystal_ar.crystaldemo;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -54,20 +55,9 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        // make sure training data has been copied
-
-
-
-        //initialize Tesseract API
-        String language = "eng";
-        datapath = getFilesDir()+ "/tesseract/";
-        mTess = new TessBaseAPI();
-        checkFile(new File(datapath + "tessdata/"));
-        mTess.init(datapath, language);
-        //TODO: Refactor library so that it doesn't take a string
-        mainLibrary notSaba = new mainLibrary();
-        notSaba.hello();
-
+        //initialize Crystal-AR
+        Context context = getApplicationContext();
+        CrystalAR crystalAR = new CrystalAR(context);
 
         image = BitmapFactory.decodeResource(getResources(), R.drawable.test_image);
         //josh.processImage(image);
