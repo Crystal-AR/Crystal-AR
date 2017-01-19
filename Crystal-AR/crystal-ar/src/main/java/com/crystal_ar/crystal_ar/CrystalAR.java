@@ -25,14 +25,15 @@ public class CrystalAR {
         private TessBaseAPI mTess;    //Tess API reference
         private String datapath = ""; //path to folder containing language data file
         private String OCRresult;     // result from processImage
-        private Context context;      //context of the user's application
+        private Context appContext;      //context of the user's application
         Word[] words;
 
         /*
          * @param context - context of the user's application: getApplicationContext()
          */
         public CrystalAR(Context context) {
-            datapath = context.getFilesDir()+ "/tesseract/";
+            appContext = context;
+            datapath = appContext.getFilesDir()+ "/tesseract/";
             checkFile(new File(datapath + "tessdata/"));
             mTess = new TessBaseAPI();
             mTess.init(datapath, "eng");
@@ -44,7 +45,7 @@ public class CrystalAR {
                 String filepath = datapath + "/tessdata/eng.traineddata";
 
                 //get access to AssetManager
-                AssetManager assetManager = context.getAssets();
+                AssetManager assetManager = appContext.getAssets();
 
                 //open byte streams for reading/writing
                 InputStream instream = assetManager.open("tessdata/eng.traineddata");
