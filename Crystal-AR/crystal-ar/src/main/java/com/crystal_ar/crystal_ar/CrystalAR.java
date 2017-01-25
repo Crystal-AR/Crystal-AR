@@ -16,6 +16,8 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -148,6 +150,31 @@ public class CrystalAR {
                 rtn[i] = urlsFound.get(i);
 
             return rtn;
+        }
+
+        /*
+         * Gives an arraylist of phonenumbers from the previously processed image.
+         */
+        public ArrayList<String> getPhoneNumbers() {
+            // Regex patterns that match:
+            // 1. [+(]dd[)][- .]dd[- .]dd[- .]dd[- .]dd
+            // 2. [+(]dd[)][- .]dd[- .]dd[- .]dd
+            // 3. [+(]dd[)][- .]dd[- .]dd
+            String reg = "([\\+(]?(\\d){2,}[)]?[- \\.]?(\\d){2,}[- \\.]?(\\d){2,}[- \\.]?(\\d){2,}[- \\.]?(\\d){2,})|" +
+                         "([\\+(]?(\\d){2,}[)]?[- \\.]?(\\d){2,}[- \\.]?(\\d){2,}[- \\.]?(\\d){2,})|" +
+                         "([\\+(]?(\\d){2,}[)]?[- \\.]?(\\d){2,}[- \\.]?(\\d){2,})";
+
+            Pattern pattern = Pattern.compile(reg);
+            Matcher matcher = pattern.matcher(OCRresult);
+
+            ArrayList<String> phoneNumbers = new ArrayList<String>();
+
+            while (matcher.find()) {
+                Log.d("enter", "enter");
+                phoneNumbers.add(matcher.group());
+            }
+
+            return phoneNumbers;
         }
     }
 
