@@ -170,7 +170,6 @@ public class CrystalAR {
             ArrayList<String> phoneNumbers = new ArrayList<String>();
 
             while (matcher.find()) {
-                Log.d("enter", "enter");
                 phoneNumbers.add(matcher.group());
             }
 
