@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import com.googlecode.leptonica.android.Pixa;
+import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class CrystalAR {
@@ -117,6 +118,23 @@ public class CrystalAR {
                     break;
                 words[i] = new Word(parts[i], lst.get(i));
             }
+        }
+
+        public void ocrContinuousDecode(byte[] data, int width, int height){
+            int[] pixels = new int[width * height];
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int grey = data[x] & 0xff;
+                    pixels[x] = 0xFF000000 | (grey * 0x00010101);
+                }
+            }
+
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+
+            mTess.setImage(ReadFile.readBitmap(bitmap));
+            OCRresult = mTess.getUTF8Text();
         }
 
         /*
