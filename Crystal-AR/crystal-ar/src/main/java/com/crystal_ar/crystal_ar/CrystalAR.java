@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.Log;
+import android.util.Patterns;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -153,7 +155,7 @@ public class CrystalAR {
         }
 
         /*
-         * Gives an arraylist of phonenumbers from the previously processed image.
+         * Returns an ArrayList of phonenumbers from the previously processed image.
          */
         public ArrayList<String> getPhoneNumbers() {
             // Regex patterns that match:
@@ -177,25 +179,20 @@ public class CrystalAR {
         }
 
         /*
-         * Gives an arraylist of emails from the previously processed image.
+         * Returns an ArrayList of emails from the previously processed image.
          */
         public ArrayList<String> getEmails() {
-            // Regex patterns that match:
-            // xxxx
-
-            String reg = "xxx";
-            // "[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}"
-
-            // find all words with '@' in them. then run the validator?
-
-            Pattern pattern = Pattern.compile(reg);
-            Matcher matcher = pattern.matcher(OCRresult);
-
+            // Split OCRResult on whitespace and check for emails.
             ArrayList<String> emails = new ArrayList<String>();
-
-            while (matcher.find()) {
-                emails.add(matcher.group());
+            for (Word word : words) {
+                if (Patterns.EMAIL_ADDRESS.matcher(word.str).matches()) {
+                    emails.add(word.str);
+                }
             }
+
+            // Alternative:
+            // Match against simple regex and then check for "proper" emails.
+            // "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+"
 
             return emails;
         }
