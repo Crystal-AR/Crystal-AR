@@ -175,5 +175,29 @@ public class CrystalAR {
 
             return phoneNumbers;
         }
+
+        /*
+         * Gives an arraylist of emails from the previously processed image.
+         */
+        public ArrayList<String> getEmails() {
+            // Regex patterns that match:
+            // xxxx
+
+            String reg = "xxx";
+            // "[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}"
+
+            // find all words with '@' in them. then run the validator?
+
+            Pattern pattern = Pattern.compile(reg);
+            Matcher matcher = pattern.matcher(OCRresult);
+
+            ArrayList<String> emails = new ArrayList<String>();
+
+            while (matcher.find()) {
+                emails.add(matcher.group());
+            }
+
+            return emails;
+        }
     }
 
