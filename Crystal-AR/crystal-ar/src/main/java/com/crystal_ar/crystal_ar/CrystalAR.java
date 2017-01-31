@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.util.Log;
+import android.util.Patterns;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -153,7 +153,7 @@ public class CrystalAR {
         }
 
         /*
-         * Gives an arraylist of phonenumbers from the previously processed image.
+         * Returns an ArrayList of phonenumbers from the previously processed image.
          */
         public ArrayList<String> getPhoneNumbers() {
             // Regex patterns that match:
@@ -174,6 +174,24 @@ public class CrystalAR {
             }
 
             return phoneNumbers;
+        }
+
+        /*
+         * Returns an ArrayList of emails from the previously processed image.
+         */
+        public ArrayList<String> getEmails() {
+            ArrayList<String> emails = new ArrayList<String>();
+            for (Word word : words) {
+                if (Patterns.EMAIL_ADDRESS.matcher(word.str).matches()) {
+                    emails.add(word.str);
+                }
+            }
+
+            // Alternative:
+            // Match against simple regex and then check for "proper" emails.
+            // "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+"
+
+            return emails;
         }
     }
 
