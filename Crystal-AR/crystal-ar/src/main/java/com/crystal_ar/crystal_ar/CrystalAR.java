@@ -180,7 +180,6 @@ public class CrystalAR {
          * Returns an ArrayList of emails from the previously processed image.
          */
         public ArrayList<String> getEmails() {
-            // Split OCRResult on whitespace and check for emails.
             ArrayList<String> emails = new ArrayList<String>();
             for (Word word : words) {
                 if (Patterns.EMAIL_ADDRESS.matcher(word.str).matches()) {
