@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.util.Log;
 import android.util.Patterns;
 
 import java.io.File;
@@ -16,6 +17,8 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,6 +63,24 @@ public class CrystalAR {
                 checkFile(new File(datapath + "tessdata/"), lang);
             }
             mTess.init(datapath, language);
+        }
+
+        /*
+        * Returns AR information to user
+         */
+        public HashMap decode(Bitmap bitmap, String tag){
+            HashMap results = new HashMap<String, String>();
+            switch (tag) {
+                case "url": results.put("url", bitmap.getURLs());
+                    break;
+                case "phoneNumber": results.put("phoneNumber", bitmap.getPhoneNumbers());
+                    break;
+                case "email": results.put("email", bitmap.getEmails());
+                    break;
+                default: Log.d("No", "Results");
+                    break;
+            }
+            return results;
         }
 
         private void copyFile(String lang) {
