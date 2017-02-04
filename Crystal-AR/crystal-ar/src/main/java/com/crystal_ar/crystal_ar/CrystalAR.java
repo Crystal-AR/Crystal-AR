@@ -28,8 +28,9 @@ public class CrystalAR {
         private String datapath = ""; //path to folder containing language data file
         private String OCRresult;     // result from processImage
         private Context appContext;      //context of the user's application
-        Word[] words;
-
+        private Bitmap img;
+        private Word[] words;
+        private ArrayList<Rect> rects;
         /*
          * @param context - context of the user's application: getApplicationContext()
          */
@@ -37,6 +38,16 @@ public class CrystalAR {
             appContext = context;
             datapath = appContext.getFilesDir()+ "/tesseract/";
             mTess = new TessBaseAPI();
+        }
+
+        public CrystalAR(Context context, Bitmap image) {
+            if(datapath== "") {
+                appContext = context;
+                datapath = appContext.getFilesDir() + "/tesseract/";
+                mTess = new TessBaseAPI();
+            }
+            img=image;
+            processImage();
         }
 
         /*
@@ -105,7 +116,7 @@ public class CrystalAR {
          * any other public methods.
          * @param image - image to analyze
          */
-        public void processImage(Bitmap image) {
+        public void processImage() {
             mTess.setImage(image);
             long startTime = System.nanoTime();
             OCRresult = mTess.getUTF8Text();
@@ -193,5 +204,24 @@ public class CrystalAR {
 
             return emails;
         }
+
+        /* Allows the user to replace a word with a picture */
+        /* Input: the original image, list of Strings to be replaced, and list of images replacing the words
+        Output: the modified image
+         */
+        public Bitmap replaceWithImage(Bitmap image, String[] toReplace, Bitmap[] toAddImages) {
+            Bitmap newImg=image;
+            int index=-1,i;
+            Canvas canvas = new Canvas (newImg);
+            for(i=0; i< toReplace.length; i++) {
+                index = words.indexOf(toReplace[i]);
+                if (index != -1) {
+                    canvas.drawBitmap(toAddImages[i], null, rects[index], null);
+                    OCRresult = OCRresult.replaceFirst(word, "  "); //replace with two blank spaces.
+                }
+            }
+            return newImg;
+        }
+
     }
 
