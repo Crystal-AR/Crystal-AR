@@ -70,16 +70,16 @@ public class CrystalAR {
          */
         public HashMap decode(Bitmap bitmap, String tag){
             HashMap results = new HashMap<String, String>();
-            switch (tag) {
-                case "url": results.put("url", bitmap.getURLs());
-                    break;
-                case "phoneNumber": results.put("phoneNumber", bitmap.getPhoneNumbers());
-                    break;
-                case "email": results.put("email", bitmap.getEmails());
-                    break;
-                default: Log.d("No", "Results");
-                    break;
-            }
+//            switch (tag) {
+//                case "url": results.put("url", bitmap.getURLs());
+//                    break;
+//                case "phoneNumber": results.put("phoneNumber", bitmap.getPhoneNumbers());
+//                    break;
+//                case "email": results.put("email", bitmap.getEmails());
+//                    break;
+//                default: Log.d("No", "Results");
+//                    break;
+//            }
             return results;
         }
 
