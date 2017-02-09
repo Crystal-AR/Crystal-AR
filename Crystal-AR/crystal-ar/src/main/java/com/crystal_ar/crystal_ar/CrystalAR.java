@@ -4,6 +4,7 @@ package com.crystal_ar.crystal_ar;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 import android.util.Patterns;
@@ -50,7 +51,7 @@ public class CrystalAR {
                 mTess = new TessBaseAPI();
             }
             img=image;
-            processImage();
+            processImage(img);
         }
 
         /*
@@ -63,24 +64,6 @@ public class CrystalAR {
                 checkFile(new File(datapath + "tessdata/"), lang);
             }
             mTess.init(datapath, language);
-        }
-
-        /*
-        * Returns AR information to user
-         */
-        public HashMap decode(Bitmap bitmap, String tag){
-            HashMap results = new HashMap<String, String>();
-//            switch (tag) {
-//                case "url": results.put("url", bitmap.getURLs());
-//                    break;
-//                case "phoneNumber": results.put("phoneNumber", bitmap.getPhoneNumbers());
-//                    break;
-//                case "email": results.put("email", bitmap.getEmails());
-//                    break;
-//                default: Log.d("No", "Results");
-//                    break;
-//            }
-            return results;
         }
 
         private void copyFile(String lang) {
@@ -137,7 +120,7 @@ public class CrystalAR {
          * any other public methods.
          * @param image - image to analyze
          */
-        public void processImage() {
+        public void processImage(Bitmap image) {
             mTess.setImage(image);
             long startTime = System.nanoTime();
             OCRresult = mTess.getUTF8Text();
@@ -234,13 +217,13 @@ public class CrystalAR {
             Bitmap newImg=image;
             int index=-1,i;
             Canvas canvas = new Canvas (newImg);
-            for(i=0; i< toReplace.length; i++) {
-                index = words.indexOf(toReplace[i]);
-                if (index != -1) {
-                    canvas.drawBitmap(toAddImages[i], null, rects[index], null);
-                    OCRresult = OCRresult.replaceFirst(word, "  "); //replace with two blank spaces.
-                }
-            }
+//            for(i=0; i< toReplace.length; i++) {
+//                index = words.indexOf(toReplace[i]);
+//                if (index != -1) {
+//                    canvas.drawBitmap(toAddImages[i], null, rects[index], null);
+//                    OCRresult = OCRresult.replaceFirst(word, "  "); //replace with two blank spaces.
+//                }
+//            }
             return newImg;
         }
 
