@@ -4,7 +4,9 @@ package com.crystal_ar.crystal_ar;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.Log;
 import android.util.Patterns;
 
 import java.io.File;
@@ -16,6 +18,8 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +51,7 @@ public class CrystalAR {
                 mTess = new TessBaseAPI();
             }
             img=image;
-            processImage();
+            processImage(img);
         }
 
         /*
@@ -116,7 +120,7 @@ public class CrystalAR {
          * any other public methods.
          * @param image - image to analyze
          */
-        public void processImage() {
+        public void processImage(Bitmap image) {
             mTess.setImage(image);
             long startTime = System.nanoTime();
             OCRresult = mTess.getUTF8Text();
@@ -213,13 +217,13 @@ public class CrystalAR {
             Bitmap newImg=image;
             int index=-1,i;
             Canvas canvas = new Canvas (newImg);
-            for(i=0; i< toReplace.length; i++) {
-                index = words.indexOf(toReplace[i]);
-                if (index != -1) {
-                    canvas.drawBitmap(toAddImages[i], null, rects[index], null);
-                    OCRresult = OCRresult.replaceFirst(word, "  "); //replace with two blank spaces.
-                }
-            }
+//            for(i=0; i< toReplace.length; i++) {
+//                index = words.indexOf(toReplace[i]);
+//                if (index != -1) {
+//                    canvas.drawBitmap(toAddImages[i], null, rects[index], null);
+//                    OCRresult = OCRresult.replaceFirst(word, "  "); //replace with two blank spaces.
+//                }
+//            }
             return newImg;
         }
 
