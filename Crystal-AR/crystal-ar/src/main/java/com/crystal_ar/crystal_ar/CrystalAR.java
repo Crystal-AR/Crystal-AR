@@ -230,7 +230,7 @@ public class CrystalAR {
 
     /*
      * Creates a Rect surrounding a given List<Word>.
-     * @param List<Word> for which to make a surrounding Rect.
+     * @param List<Word> - Words for which to make a surrounding Rect.
      * @return Rect that surrounds the list of words.
      */
     public Rect createRect(List<Word> words) {
