@@ -6,6 +6,8 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.util.Patterns;
 
@@ -20,6 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +30,7 @@ import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class CrystalAR {
+        private final static int CORNERS_FOUND = 2;
 
         private TessBaseAPI mTess;    //Tess API reference
         private String datapath = ""; //path to folder containing language data file
@@ -225,6 +229,36 @@ public class CrystalAR {
 //                }
 //            }
             return newImg;
+        }
+
+        public TreeSet<IntPair> findCorners(Bitmap image){
+            CornerFinder sm = new CornerFinder();
+            TreeSet<IntPair> corners = sm.findCorners(image);
+
+            return corners;
+        }
+
+        public FindCornersRunnable findCornersRunnable(Handler handler, Bitmap image) {
+            return new FindCornersRunnable(handler, image);
+        }
+
+        private class FindCornersRunnable implements Runnable {
+            Handler handler;
+            Bitmap image;
+
+            public FindCornersRunnable(Handler handler, Bitmap image) {
+                this.handler = handler;
+                this.image = image;
+            }
+
+            public void run() {
+                TreeSet<IntPair> corners = findCorners(this.image);
+
+                Message message = new Message();
+                message.what = CrystalAR.CORNERS_FOUND;
+                message.obj = corners;
+                this.handler.sendMessage(message);
+            }
         }
 
     }
