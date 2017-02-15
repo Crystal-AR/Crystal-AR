@@ -31,7 +31,7 @@ import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class CrystalAR {
-    private final static int IMAGE_PROCESSED = 1;
+    public final static int IMAGE_PROCESSED = 1;
 
     private TessBaseAPI mTess;    //Tess API reference
     private String datapath = ""; //path to folder containing language data file
