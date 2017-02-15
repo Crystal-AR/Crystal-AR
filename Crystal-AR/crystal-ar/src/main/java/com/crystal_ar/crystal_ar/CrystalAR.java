@@ -186,13 +186,13 @@ public class CrystalAR {
             phoneNumberStrings.add(matcher.group());
         }
 
-        // Find the words corresponding to each phone number and create a new word for it.
         int startIndex;
         int endIndex;
         int ocrResultIndex;
         Rect phoneNumberRect;
         List<Word> phoneNumberWords = new ArrayList<Word>();
         List<Word> phoneNumbers = new ArrayList<Word>();
+        // Find the words corresponding to each phone number and create a new word for it.
         for (String phoneNumber : phoneNumberStrings) {
             // Get start and end index of the phone number in OCRresult.
             startIndex = OCRresult.indexOf(phoneNumber);
@@ -200,10 +200,8 @@ public class CrystalAR {
 
             ocrResultIndex = 0;
             for (Word word : words) {
-                // Increment ocrResultIndex by the length of the word + 1.
-                // We add 1 because words were found by splitting on spaces, but we need to add
-                // this back into the index as the index is for OCRresult.
-                ocrResultIndex = ocrResultIndex + word.str.length() + 1;
+                // Increment ocrResultIndex by the length of the word.
+                ocrResultIndex = ocrResultIndex + word.str.length();
                 // If startIndex is less than or equal to the index, the word must be part of our
                 // phoneNumber.
                 if (startIndex <= ocrResultIndex) {
@@ -215,6 +213,10 @@ public class CrystalAR {
                 if (endIndex <= ocrResultIndex) {
                     break;
                 }
+
+                // We add 1 because words were found by splitting on spaces, but we need to add
+                // this back into the index as the index is for OCRresult.
+                ocrResultIndex++;
             }
 
             // Finds the rectangle for the phone number and adds a new Word for this phone number
