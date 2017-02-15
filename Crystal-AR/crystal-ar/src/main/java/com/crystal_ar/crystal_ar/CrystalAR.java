@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.Pair;
 import android.util.Patterns;
 
 import java.io.File;
@@ -166,9 +167,9 @@ public class CrystalAR {
     }
 
     /*
-     * Returns an ArrayList of phonenumbers from the previously processed image.
+     * Returns an List<Word> with phone numbers from the previously processed image.
      */
-    public ArrayList<String> getPhoneNumbers() {
+    public List<Word> getPhoneNumbers() {
         // Regex patterns that match:
         // 1. [+(]dd[)][- .]dd[- .]dd[- .]dd[- .]dd
         // 2. [+(]dd[)][- .]dd[- .]dd[- .]dd
@@ -180,17 +181,82 @@ public class CrystalAR {
         Pattern pattern = Pattern.compile(reg);
         Matcher matcher = pattern.matcher(OCRresult);
 
-        ArrayList<String> phoneNumbers = new ArrayList<String>();
-
-        // keep track of end of previous match and then only loop over the words from there and onwards.
-        // calculate the box once we have found the sequence of Words that make up the match.
-
-        // mather.groupCount() for number of groups?
+        ArrayList<String> phoneNumberStrings = new ArrayList<String>();
         while (matcher.find()) {
-            phoneNumbers.add(matcher.group());
+            phoneNumberStrings.add(matcher.group());
         }
 
-        return phoneNumbers;
+        // Find the words corresponding to each phone number and create a new word for it.
+        int startIndex;
+        int endIndex;
+        int ocrResultIndex;
+        Rect phoneNumberRect;
+        List<Word> phoneNumberWords = new ArrayList<Word>();
+        List<Word> phoneNumbers = new ArrayList<Word>();
+        for (String phoneNumber : phoneNumberStrings) {
+            // Get start and end index of the phone number in OCRresult.
+            startIndex = OCRresult.indexOf(phoneNumber);
+            endIndex = phoneNumber.length() + startIndex;
+
+            ocrResultIndex = 0;
+            for (Word word : words) {
+                // Increment ocrResultIndex by the length of the word + 1.
+                // We add 1 because words were found by splitting on spaces, but we need to add
+                // this back into the index as the index is for OCRresult.
+                ocrResultIndex = ocrResultIndex + word.str.length() + 1;
+                // If startIndex is less than or equal to the index, the word must be part of our
+                // phoneNumber.
+                if (startIndex <= ocrResultIndex) {
+                    phoneNumbers.add(word);
+                }
+
+                // If the end index of the phone number is less than or equal to the index,
+                // then surely the next word will not be part of the phone number, so we break.
+                if (endIndex <= ocrResultIndex) {
+                    break;
+                }
+            }
+
+            // Finds the rectangle for the phone number and adds a new Word for this phone number
+            // to our list of Words.
+            phoneNumberRect = createRect(phoneNumbers);
+            phoneNumberWords.add(new Word(phoneNumber, phoneNumberRect));
+        }
+
+        return phoneNumberWords;
+    }
+
+    /*
+     * Creates a Rect surrounding a given List<Word>.
+     * @param List<Word> for which to make a surrounding Rect.
+     * @return Rect that surrounds the list of words.
+     */
+    public Rect createRect(List<Word> words) {
+        int top = -1;
+        int left = -1;
+        int bottom = -1;
+        int right = -1;
+
+        // xx
+        for (Word word : words) {
+            if (left == -1 || word.x < left) {
+                left = word.x;
+            }
+
+            if (top == -1 || word.y > top) {
+                top = word.y;
+            }
+
+            if (right == -1 || word.x + word.width > right) {
+                right = word.x + word.width;
+            }
+
+            if (bottom == -1 || word.y - word.height < bottom) {
+                bottom = word.y - word.height;
+            }
+        }
+
+        return new Rect(left, top, right, bottom);
     }
 
     /*
