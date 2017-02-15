@@ -149,7 +149,8 @@ public class CrystalAR {
     }
 
     /*
-     * Gives a List<Word> with urls from the previously processed image.
+     * Returns a List<Word> with urls from the previously processed image.
+     * @return List<Word> - urls.
      */
     public List<Word> getURLs() {
         List<Word> urlsFound = new ArrayList<Word>();
@@ -168,6 +169,7 @@ public class CrystalAR {
 
     /*
      * Returns an List<Word> with phone numbers from the previously processed image.
+     * @return List<Word> - phone numbers.
      */
     public List<Word> getPhoneNumbers() {
         // Regex patterns that match:
@@ -239,7 +241,7 @@ public class CrystalAR {
         int bottom = -1;
         int right = -1;
 
-        // xx
+        // Finds the left-, top-, right-, bottom-most extreme values.
         for (Word word : words) {
             if (left == -1 || word.x < left) {
                 left = word.x;
@@ -263,6 +265,7 @@ public class CrystalAR {
 
     /*
      * Returns an List<Word> with emails from the previously processed image.
+     * @return List<Word> - emails.
      */
     public List<Word> getEmails() {
         List<Word> emails = new ArrayList<Word>();
