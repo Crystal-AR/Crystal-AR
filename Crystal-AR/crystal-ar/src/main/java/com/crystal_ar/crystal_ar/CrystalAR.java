@@ -199,6 +199,7 @@ public class CrystalAR {
             // Get start and end index of the phone number in OCRresult.
             startIndex = OCRresult.indexOf(phoneNumber);
             endIndex = phoneNumber.length() + startIndex;
+            phoneNumbers.clear();
 
             ocrResultIndex = 0;
             for (Word word : words) {
@@ -247,7 +248,7 @@ public class CrystalAR {
                 left = word.x;
             }
 
-            if (top == -1 || word.y > top) {
+            if (top == -1 || word.y < top) {
                 top = word.y;
             }
 
@@ -255,8 +256,8 @@ public class CrystalAR {
                 right = word.x + word.width;
             }
 
-            if (bottom == -1 || word.y - word.height < bottom) {
-                bottom = word.y - word.height;
+            if (bottom == -1 || word.y + word.height > bottom) {
+                bottom = word.y + word.height;
             }
         }
 
