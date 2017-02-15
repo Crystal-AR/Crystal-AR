@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -147,25 +148,21 @@ public class CrystalAR {
     }
 
     /*
-     * Gives a list of urls from the previously processed image
+     * Gives a List<Word> with urls from the previously processed image.
      */
-    public URL[] getURLs() {
-        ArrayList<URL> urlsFound = new ArrayList<URL>();
+    public List<Word> getURLs() {
+        List<Word> urlsFound = new ArrayList<Word>();
         for (Word word : words) {
             URL url;
             try {
                 url = new URL(word.str);
-                urlsFound.add(url);
+                urlsFound.add(word);
             } catch (MalformedURLException e) {
                 // skip this -- should probably handle this somehow...
             }
         }
 
-        URL[] rtn = new URL[urlsFound.size()];
-        for (int i = 0; i < urlsFound.size(); ++i)
-            rtn[i] = urlsFound.get(i);
-
-        return rtn;
+        return urlsFound;
     }
 
     /*
@@ -185,6 +182,10 @@ public class CrystalAR {
 
         ArrayList<String> phoneNumbers = new ArrayList<String>();
 
+        // keep track of end of previous match and then only loop over the words from there and onwards.
+        // calculate the box once we have found the sequence of Words that make up the match.
+
+        // mather.groupCount() for number of groups?
         while (matcher.find()) {
             phoneNumbers.add(matcher.group());
         }
@@ -193,13 +194,13 @@ public class CrystalAR {
     }
 
     /*
-     * Returns an ArrayList of emails from the previously processed image.
+     * Returns an List<Word> with emails from the previously processed image.
      */
-    public ArrayList<String> getEmails() {
-        ArrayList<String> emails = new ArrayList<String>();
+    public List<Word> getEmails() {
+        List<Word> emails = new ArrayList<Word>();
         for (Word word : words) {
             if (Patterns.EMAIL_ADDRESS.matcher(word.str).matches()) {
-                emails.add(word.str);
+                emails.add(word);
             }
         }
 
