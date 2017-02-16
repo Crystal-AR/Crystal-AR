@@ -198,7 +198,8 @@ public class CrystalAR {
         for (String phoneNumber : phoneNumberStrings) {
             // Get start and end index of the phone number in OCRresult.
             startIndex = OCRresult.indexOf(phoneNumber);
-            endIndex = phoneNumber.length() + startIndex;
+            // We subtract 1 because indices start at 0.
+            endIndex = startIndex + phoneNumber.length() - 1;
             phoneNumbers.clear();
 
             ocrResultIndex = 0;
