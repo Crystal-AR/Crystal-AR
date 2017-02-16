@@ -202,7 +202,9 @@ public class CrystalAR {
             endIndex = startIndex + phoneNumber.length() - 1;
             phoneNumbers.clear();
 
-            ocrResultIndex = 0;
+            // ocrResultIndex starts at -1 because index starts at 0 and we are adding the length
+            // of the word to update the index.
+            ocrResultIndex = -1;
             for (Word word : words) {
                 // Increment ocrResultIndex by the length of the word.
                 ocrResultIndex = ocrResultIndex + word.str.length();
