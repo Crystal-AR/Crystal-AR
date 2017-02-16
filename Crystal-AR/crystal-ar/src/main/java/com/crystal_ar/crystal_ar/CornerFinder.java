@@ -295,14 +295,15 @@ public class CornerFinder {
             extrema.remove(corner);
         }
         long corner_time = System.currentTimeMillis();
-
-        System.out.println("---Times---");
-        System.out.println(processing_time - start_time);
-        System.out.println(painting_time - processing_time); // time hog
-        System.out.println(borders_time - painting_time);
-        System.out.println(cleaning_time - borders_time);
-        System.out.println(extrema_time - cleaning_time);
-        System.out.println(corner_time - extrema_time);
+        
+        //TODO[@tredding]: Remove all lines that track time.
+        //System.out.println("---Times---");
+        //System.out.println(processing_time - start_time);
+        //System.out.println(painting_time - processing_time); // time hog
+        //System.out.println(borders_time - painting_time);
+        //System.out.println(cleaning_time - borders_time);
+        //System.out.println(extrema_time - cleaning_time);
+        //System.out.println(corner_time - extrema_time);
 
         return corners;
     }
