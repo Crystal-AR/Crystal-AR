@@ -172,11 +172,7 @@ public class CrystalAR {
      * @return List<Word> - phone numbers.
      */
     public List<Word> getPhoneNumbers() {
-        // Regex patterns that match:
-        // 1. [+(]dd[)][- .]dd[- .]dd[- .]dd[- .]dd
-        // 2. [+(]dd[)][- .]dd[- .]dd[- .]dd
-        // 3. [+(]dd[)][- .]dd[- .]dd
-        String reg = "([\\+(]?(\\d){2,}[)]?([- \\.]?(\\d){2,}){1,4})";
+        String reg = "([\\+(]?(\\d){1,}[)]?([- \\.]?(\\d){2,}){1,4})";
 
         Pattern pattern = Pattern.compile(reg);
         Matcher matcher = pattern.matcher(OCRresult);
