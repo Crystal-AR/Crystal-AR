@@ -56,6 +56,7 @@ public class CrystalAR {
         appContext = context;
         datapath = appContext.getFilesDir() + "/tesseract/";
         mTess = new TessBaseAPI();
+        // Default language of English.
         setLanguage("eng");
         img = image;
         processImage(img);
