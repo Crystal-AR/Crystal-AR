@@ -323,37 +323,36 @@ public class CrystalAR {
             message.what = CrystalAR.IMAGE_PROCESSED;
             this.handler.sendMessage(message);
         }
+    }
 
-        public TreeSet<IntPair> findCorners(Bitmap image){
-            CornerFinder sm = new CornerFinder();
-            TreeSet<IntPair> corners = sm.findCorners(image);
+    public TreeSet<IntPair> findCorners(Bitmap image){
+        CornerFinder sm = new CornerFinder();
+        TreeSet<IntPair> corners = sm.findCorners(image);
 
-            return corners;
+        return corners;
+    }
+
+    public FindCornersRunnable findCornersRunnable(Handler handler, Bitmap image) {
+        return new FindCornersRunnable(handler, image);
+    }
+
+    private class FindCornersRunnable implements Runnable {
+        Handler handler;
+        Bitmap image;
+
+        public FindCornersRunnable(Handler handler, Bitmap image) {
+            this.handler = handler;
+            this.image = image;
         }
 
-        public FindCornersRunnable findCornersRunnable(Handler handler, Bitmap image) {
-            return new FindCornersRunnable(handler, image);
+        public void run() {
+            TreeSet<IntPair> corners = findCorners(this.image);
+
+            Message message = new Message();
+            message.what = CrystalAR.CORNERS_FOUND;
+            message.obj = corners;
+            this.handler.sendMessage(message);
         }
-
-        private class FindCornersRunnable implements Runnable {
-            Handler handler;
-            Bitmap image;
-
-            public FindCornersRunnable(Handler handler, Bitmap image) {
-                this.handler = handler;
-                this.image = image;
-            }
-
-            public void run() {
-                TreeSet<IntPair> corners = findCorners(this.image);
-
-                Message message = new Message();
-                message.what = CrystalAR.CORNERS_FOUND;
-                message.obj = corners;
-                this.handler.sendMessage(message);
-            }
-        }
-
     }
 }
 
