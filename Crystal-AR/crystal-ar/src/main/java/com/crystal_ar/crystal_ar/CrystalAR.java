@@ -325,10 +325,9 @@ public class CrystalAR {
         }
     }
 
-    public TreeSet<IntPair> findCorners(Bitmap image){
+    public IntPair[] findCorners(Bitmap image){
         CornerFinder sm = new CornerFinder();
-        TreeSet<IntPair> corners = sm.findCorners(image);
-
+        IntPair[] corners = sm.findCorners(image);
         return corners;
     }
 
@@ -346,7 +345,7 @@ public class CrystalAR {
         }
 
         public void run() {
-            TreeSet<IntPair> corners = findCorners(this.image);
+            IntPair[] corners = findCorners(this.image);
 
             Message message = new Message();
             message.what = CrystalAR.CORNERS_FOUND;

@@ -19,6 +19,14 @@ public class CrystalCustomQueue {
         return total == 0;
     }
 
+    public int size() {
+        return total;
+    }
+
+    public int get(int index) {
+        return x_arr[(first + index) % x_arr.length];
+    }
+
     private void resize(int capacity)
     {
         int[] x_tmp = new int[capacity];
