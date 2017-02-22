@@ -110,6 +110,10 @@ public class CornerFinder {
         return findCorners(img, img.getWidth()/2, img.getHeight()/2);
     }
 
+    private int compute_pixel_diff(int x, int y) {
+        return Math.abs((0xFF000000 & x) - (0xFF000000 & y)) / 16777216 + Math.abs((0x00FF0000 & x) - (0x00FF0000 & y)) / 65536 + Math.abs((0x0000FF00 & x) - (0x0000FF00 & y)) / 256;
+    }
+
     /*
      * Find the corners of a table near the center of the image
      *
@@ -123,67 +127,59 @@ public class CornerFinder {
         // compute a 2d array of intensities
         int[] intense = new int[w * h];
         /*
-         * 0    -  255      intensities
-         * 1000 - 1255      looked at
-         * 2000 - 2255      table (painted)
-         * 3000 - 3255      (bad) edge
-         * 4000 - 4255      looked at
-         * 5000 - 5255      (good) edge
+         * 0      intensities
+         * 1      looked at
+         * 2      table (painted)
+         * 3      (bad) edge
+         * 4      looked at
+         * 5      (good) edge
          */
         int[][] magic = new int[w][h];
         img.getPixels(intense, 0, w, 0, 0, w, h);
-        int red, green, blue, i;
-        for (int x = 0; x < w; ++x) {
-            for (int y = 0; y < h; ++y) {
-                i = x + y * w;
-                magic[x][y] = ((0xFF000000 & intense[i]) / 16777216 + (0x00FF0000 & intense[i]) / 65536 + (0x0000FF00 & intense[i]) / 256) / 3;
-            }
-        }
-
-
 
         // "paint" the table
         CrystalCustomQueue pixels_to_look_at = new CrystalCustomQueue();
         pixels_to_look_at.enqueue(center_x, center_y);
-        magic[w/2][h/2] += 1000;
+        ++magic[w/2][h/2];
         int threshold = 4;
         while (!pixels_to_look_at.is_empty()) {
             int pixel = pixels_to_look_at.dequeue();
             int pixel_x = pixel / 100000;
             int pixel_y = pixel % 100000;
             if (pixel_x != 0) {
-                if (Math.abs(magic[pixel_x - 1][pixel_y]%1000 - magic[pixel_x][pixel_y]%1000) < threshold) {
-                    if (magic[pixel_x-1][pixel_y] < 1000) {
-                        magic[pixel_x-1][pixel_y] += 1000;
+
+                if (compute_pixel_diff(intense[(pixel_x-1) + pixel_y * w], intense[pixel_x + pixel_y * w]) < threshold) {
+                    if (magic[pixel_x-1][pixel_y] < 1) {
+                        ++magic[pixel_x-1][pixel_y];
                         pixels_to_look_at.enqueue(pixel_x-1, pixel_y);
                     }
                 }
             }
             if (pixel_y != 0) {
-                if (Math.abs(magic[pixel_x][pixel_y - 1]%1000 - magic[pixel_x][pixel_y]%1000) < threshold) {
-                    if (magic[pixel_x][pixel_y-1] < 1000) {
-                        magic[pixel_x][pixel_y-1] += 1000;
+                if (compute_pixel_diff(intense[pixel_x + (pixel_y-1) * w], intense[pixel_x + pixel_y * w]) < threshold) {
+                    if (magic[pixel_x][pixel_y-1] < 1) {
+                        ++magic[pixel_x][pixel_y-1];
                         pixels_to_look_at.enqueue(pixel_x, pixel_y-1);
                     }
                 }
             }
             if (pixel_x != w - 1) {
-                if (Math.abs(magic[pixel_x + 1][pixel_y]%1000 - magic[pixel_x][pixel_y]%1000) < threshold) {
-                    if (magic[pixel_x+1][pixel_y] < 1000) {
-                        magic[pixel_x+1][pixel_y] += 1000;
+                if (compute_pixel_diff(intense[(pixel_x+1) + pixel_y * w], intense[pixel_x + pixel_y * w]) < threshold) {
+                    if (magic[pixel_x+1][pixel_y] < 1) {
+                        ++magic[pixel_x+1][pixel_y];
                         pixels_to_look_at.enqueue(pixel_x+1, pixel_y);
                     }
                 }
             }
             if (pixel_y != h - 1) {
-                if (Math.abs(magic[pixel_x][pixel_y + 1]%1000 - magic[pixel_x][pixel_y]%1000) < threshold) {
-                    if (magic[pixel_x][pixel_y+1] < 1000) {
-                        magic[pixel_x][pixel_y+1] += 1000;
+                if (compute_pixel_diff(intense[pixel_x + (pixel_y+1) * w], intense[pixel_x + pixel_y * w]) < threshold) {
+                    if (magic[pixel_x][pixel_y+1] < 1) {
+                        ++magic[pixel_x][pixel_y+1];
                         pixels_to_look_at.enqueue(pixel_x, pixel_y+1);
                     }
                 }
             }
-            magic[pixel_x][pixel_y] = 2000;
+            magic[pixel_x][pixel_y] = 2;
         }
 
 
@@ -193,9 +189,9 @@ public class CornerFinder {
         double max_dist = 0;
         for (int x = 1; x < w - 1; ++x) {
             for (int y = 1; y < h - 1; ++y) {
-                if (magic[x][y] < 1000) {
-                    if ((2000 <= magic[x+1][y] && magic[x+1][y] < 3000) || (2000 <= magic[x-1][y] && magic[x-1][y] < 3000) || (2000 <= magic[x][y-1] && magic[x][y-1] < 3000) || (2000 <= magic[x][y+1] && magic[x][y+1] < 3000)) {
-                        magic[x][y] = (magic[x][y]%1000) + 3000;
+                if (magic[x][y] < 1) {
+                    if ((2 <= magic[x+1][y] && magic[x+1][y] < 3) || (2 <= magic[x-1][y] && magic[x-1][y] < 3) || (2 <= magic[x][y-1] && magic[x][y-1] < 3) || (2 <= magic[x][y+1] && magic[x][y+1] < 3)) {
+                        magic[x][y] = 3;
                         double dist = (x-center_x)*(x-center_x) + (y-center_y)*(y-center_y);
                         if (dist > max_dist) {
                             max_dist = dist;
@@ -215,31 +211,39 @@ public class CornerFinder {
             int pixel = pixels_to_look_at_b.dequeue();
             int x = pixel / 100000;
             int y = pixel % 100000;
-            magic[x][y] = (magic[x][y] % 1000) + 5000;
+            magic[x][y] = 5;
             border_pixels.enqueue(x, y);
-            if (x != 0 && 3000 < magic[x - 1][y] && magic[x - 1][y] < 5000) {
+            if (x != 0 && magic[x - 1][y] == 3) {
                 pixels_to_look_at_b.enqueue(x-1, y);
+                magic[x-1][y] = 4;
             }
-            if (x != magic.length-1 && 3000 < magic[x + 1][y] && magic[x + 1][y] < 5000) {
+            if (x != magic.length-1 && magic[x + 1][y] == 3) {
                 pixels_to_look_at_b.enqueue(x+1, y);
+                magic[x+1][y] = 4;
             }
-            if (y != 0 && 3000 < magic[x][y - 1] && magic[x][y - 1] < 5000) {
+            if (y != 0 && magic[x][y - 1] == 3) {
                 pixels_to_look_at_b.enqueue(x, y-1);
+                magic[x][y-1] = 4;
             }
-            if (y != magic[0].length-1 && 3000 < magic[x][y + 1] && magic[x][y + 1] < 5000) {
+            if (y != magic[0].length-1 && magic[x][y + 1] == 3) {
                 pixels_to_look_at_b.enqueue(x, y+1);
+                magic[x][y+1] = 4;
             }
-            if (x != 0 && y != 0 && 3000 < magic[x - 1][y - 1] && magic[x - 1][y - 1] < 5000) {
+            if (x != 0 && y != 0 && magic[x - 1][y - 1] == 3) {
                 pixels_to_look_at_b.enqueue(x-1, y-1);
+                magic[x-1][y-1] = 4;
             }
-            if (x != magic.length-1 && y != 0 && 3000 < magic[x + 1][y - 1] && magic[x + 1][y - 1] < 5000) {
+            if (x != magic.length-1 && y != 0 && magic[x + 1][y - 1] == 3) {
                 pixels_to_look_at_b.enqueue(x+1, y-1);
+                magic[x+1][y-1] = 4;
             }
-            if (x != 0 && y != magic[0].length-1 && 3000 < magic[x - 1][y + 1] && magic[x - 1][y + 1] < 5000) {
+            if (x != 0 && y != magic[0].length-1 && magic[x - 1][y + 1] == 3) {
                 pixels_to_look_at_b.enqueue(x-1, y+1);
+                magic[x-1][y+1] = 4;
             }
-            if (x != magic.length-1 && y != magic[0].length-1 && 3000 < magic[x + 1][y + 1] && magic[x + 1][y + 1] < 5000) {
+            if (x != magic.length-1 && y != magic[0].length-1 && magic[x + 1][y + 1] == 3) {
                 pixels_to_look_at_b.enqueue(x+1, y+1);
+                magic[x+1][y+1] = 4;
             }
         }
 
@@ -249,7 +253,7 @@ public class CornerFinder {
         TreeMap<IntPair, Integer> extrema = new TreeMap<IntPair, Integer>();
         for (double theta = 0; theta < Math.PI/2; theta += 5 * Math.PI/180) {
             IntPair[] set = find_extrema(border_pixels, theta);
-            for (i = 0; i < set.length; ++i) {
+            for (int i = 0; i < set.length; ++i) {
                 if (extrema.containsKey(set[i]))
                     extrema.put(set[i], extrema.get(set[i])+1);
                 else
@@ -283,13 +287,13 @@ public class CornerFinder {
 
         // create set to return, and return it
         IntPair[] corners = new IntPair[4];
-        for (i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             IntPair corner = find_key_with_largest_value(extrema);
             corners[i] = corner;
             extrema.remove(corner);
         }
 
-        for (i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             for (int j = 0; j < 3; ++j) {
                 double first = Math.atan2(corners[j].y-center_y, corners[j].x-center_x);
                 double second = Math.atan2(corners[j+1].y-center_y, corners[j+1].x-center_x);
@@ -304,3 +308,4 @@ public class CornerFinder {
         return corners;
     }
 }
+
