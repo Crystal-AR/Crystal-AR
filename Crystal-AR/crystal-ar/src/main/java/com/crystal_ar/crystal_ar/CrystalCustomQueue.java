@@ -27,6 +27,12 @@ public class CrystalCustomQueue {
         return x_arr[(first + index) % x_arr.length];
     }
 
+    public void clear() {
+        first = 0;
+        next = 0;
+        total = 0;
+    }
+
     private void resize(int capacity)
     {
         int[] x_tmp = new int[capacity];
@@ -44,8 +50,7 @@ public class CrystalCustomQueue {
     public int enqueue(int x, int y)
     {
         if (x_arr.length == total) {
-            resize(x_arr.length * 2);
-
+            resize((int) (x_arr.length * 1.5));
         }
         x_arr[next++] = 100000*x+y;
 

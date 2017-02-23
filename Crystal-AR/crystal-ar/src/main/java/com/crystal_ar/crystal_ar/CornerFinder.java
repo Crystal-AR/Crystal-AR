@@ -106,13 +106,19 @@ public class CornerFinder {
         return max_key;
     }
 
-    public IntPair[] findCorners(Bitmap img) {
-        return findCorners(img, img.getWidth()/2, img.getHeight()/2);
-    }
-
     private int compute_pixel_diff(int x, int y) {
         return Math.abs((0xFF000000 & x) - (0xFF000000 & y)) / 16777216 + Math.abs((0x00FF0000 & x) - (0x00FF0000 & y)) / 65536 + Math.abs((0x0000FF00 & x) - (0x0000FF00 & y)) / 256;
     }
+
+    public IntPair[] findCorners(Bitmap img) {
+        if (img == null)
+            return new IntPair[0];
+        return findCorners(img, img.getWidth()/2, img.getHeight()/2);
+    }
+
+    int[] intense = new int[1];
+    int[][] magic = new int[1][1];
+    CrystalCustomQueue pixels_to_look_at = new CrystalCustomQueue();
 
     /*
      * Find the corners of a table near the center of the image
@@ -121,11 +127,16 @@ public class CornerFinder {
      * @return a set of corner-coordinates
      */
     public IntPair[] findCorners(Bitmap img, int center_x, int center_y) {
+        if (img == null)
+            return new IntPair[0];
         int w = img.getWidth();
         int h = img.getHeight();
+        if (w == 0 || h == 0)
+            return new IntPair[0];
 
         // compute a 2d array of intensities
-        int[] intense = new int[w * h];
+        if (intense.length != w * h)
+            intense = new int[w * h];
         /*
          * 0      intensities
          * 1      looked at
@@ -134,11 +145,12 @@ public class CornerFinder {
          * 4      looked at
          * 5      (good) edge
          */
-        int[][] magic = new int[w][h];
+        if (magic.length != w || magic[0].length != h)
+            magic = new int[w][h];
         img.getPixels(intense, 0, w, 0, 0, w, h);
 
         // "paint" the table
-        CrystalCustomQueue pixels_to_look_at = new CrystalCustomQueue();
+        pixels_to_look_at.clear();
         pixels_to_look_at.enqueue(center_x, center_y);
         ++magic[w/2][h/2];
         int threshold = 4;
@@ -204,45 +216,45 @@ public class CornerFinder {
         }
 
         // eliminate the noise in the middle of the table
-        CrystalCustomQueue pixels_to_look_at_b = new CrystalCustomQueue();
+        pixels_to_look_at.clear();
         CrystalCustomQueue border_pixels = new CrystalCustomQueue();
-        pixels_to_look_at_b.enqueue(farthest_point.x, farthest_point.y);
-        while (!pixels_to_look_at_b.is_empty()) {
-            int pixel = pixels_to_look_at_b.dequeue();
+        pixels_to_look_at.enqueue(farthest_point.x, farthest_point.y);
+        while (!pixels_to_look_at.is_empty()) {
+            int pixel = pixels_to_look_at.dequeue();
             int x = pixel / 100000;
             int y = pixel % 100000;
             magic[x][y] = 5;
             border_pixels.enqueue(x, y);
             if (x != 0 && magic[x - 1][y] == 3) {
-                pixels_to_look_at_b.enqueue(x-1, y);
+                pixels_to_look_at.enqueue(x-1, y);
                 magic[x-1][y] = 4;
             }
             if (x != magic.length-1 && magic[x + 1][y] == 3) {
-                pixels_to_look_at_b.enqueue(x+1, y);
+                pixels_to_look_at.enqueue(x+1, y);
                 magic[x+1][y] = 4;
             }
             if (y != 0 && magic[x][y - 1] == 3) {
-                pixels_to_look_at_b.enqueue(x, y-1);
+                pixels_to_look_at.enqueue(x, y-1);
                 magic[x][y-1] = 4;
             }
             if (y != magic[0].length-1 && magic[x][y + 1] == 3) {
-                pixels_to_look_at_b.enqueue(x, y+1);
+                pixels_to_look_at.enqueue(x, y+1);
                 magic[x][y+1] = 4;
             }
             if (x != 0 && y != 0 && magic[x - 1][y - 1] == 3) {
-                pixels_to_look_at_b.enqueue(x-1, y-1);
+                pixels_to_look_at.enqueue(x-1, y-1);
                 magic[x-1][y-1] = 4;
             }
             if (x != magic.length-1 && y != 0 && magic[x + 1][y - 1] == 3) {
-                pixels_to_look_at_b.enqueue(x+1, y-1);
+                pixels_to_look_at.enqueue(x+1, y-1);
                 magic[x+1][y-1] = 4;
             }
             if (x != 0 && y != magic[0].length-1 && magic[x - 1][y + 1] == 3) {
-                pixels_to_look_at_b.enqueue(x-1, y+1);
+                pixels_to_look_at.enqueue(x-1, y+1);
                 magic[x-1][y+1] = 4;
             }
             if (x != magic.length-1 && y != magic[0].length-1 && magic[x + 1][y + 1] == 3) {
-                pixels_to_look_at_b.enqueue(x+1, y+1);
+                pixels_to_look_at.enqueue(x+1, y+1);
                 magic[x+1][y+1] = 4;
             }
         }
