@@ -315,9 +315,8 @@ public class CornerFinder {
         for (int i = 0; i < 4; ++i) {
             IntPair corner = find_key_with_largest_value(extrema);
             corners[i] = corner;
-            if (corner == null) {
-                throw new RuntimeException("Only found " + i + " corners");
-            }
+            if (corner == null) throw new RuntimeException("Only found " + i + " corners");
+            if (!extrema.containsKey(corner)) throw new RuntimeException("The 'found' corner is not in the extrema dictionary");
             extrema.remove(corner);
         }
 
