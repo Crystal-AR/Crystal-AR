@@ -97,7 +97,7 @@ public class CornerFinder {
         int max_val = -100;
         IntPair max_key = null;
         for (IntPair key : keys) {
-            if (!dict.containsKey(key)) System.out.println("find_key_with_largest_value()");
+            if (!dict.containsKey(key)) throw new RuntimeException("find_key_with_largest_value given no keys");
             int val = dict.get(key);
             if (val > max_val) {
                 max_val = val;
