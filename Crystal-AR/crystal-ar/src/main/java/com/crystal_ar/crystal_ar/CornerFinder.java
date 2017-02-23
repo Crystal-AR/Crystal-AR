@@ -111,15 +111,23 @@ public class CornerFinder {
         return Math.abs((0xFF000000 & x) - (0xFF000000 & y)) / 16777216 + Math.abs((0x00FF0000 & x) - (0x00FF0000 & y)) / 65536 + Math.abs((0x0000FF00 & x) - (0x0000FF00 & y)) / 256;
     }
 
-    public IntPair[] findCorners(Bitmap img) throws NullPointerException {
+    public IntPair[] findCorners(Bitmap img) throws NullPointerException, IllegalArgumentException, RuntimeException {
         if (img == null)
             throw new NullPointerException("findCorners(img) given null for image");
         return findCorners(img, img.getWidth()/2, img.getHeight()/2);
     }
 
-    int[] intense = new int[1];
-    int[][] magic = new int[1][1];
-    CrystalCustomQueue pixels_to_look_at = new CrystalCustomQueue();
+    private int[] intense = new int[1];
+    private int[][] magic = new int[1][1];
+    private CrystalCustomQueue pixels_to_look_at = new CrystalCustomQueue();
+    public int paint_threshold = 5;
+    public int corner_threshold = 20;
+
+    public IntPair[] findCorners(Bitmap img, int center_x, int center_y, int pt, int ct) throws NullPointerException, IllegalArgumentException, RuntimeException {
+        paint_threshold = pt;
+        corner_threshold = ct;
+        return findCorners(img, center_x, center_y);
+    }
 
     /*
      * Find the corners of a table near the center of the image
@@ -154,7 +162,7 @@ public class CornerFinder {
         pixels_to_look_at.clear();
         pixels_to_look_at.enqueue(center_x, center_y);
         ++magic[w/2][h/2];
-        int threshold = 4;
+        int threshold = this.paint_threshold;
         while (!pixels_to_look_at.is_empty()) {
             int pixel = pixels_to_look_at.dequeue();
             int pixel_x = pixel / 100000;
@@ -284,7 +292,7 @@ public class CornerFinder {
                 int dist = (key.x-key2.x)*(key.x-key2.x) + (key.y-key2.y)*(key.y-key2.y);
                 if (key == key2)
                     continue;
-                if (dist < 20) {
+                if (dist < this.corner_threshold) {
                     if (!extrema.containsKey(key)) throw new RuntimeException("key '" + key.x + ", " + key.y + "' not found in condense loop");
                     if (!extrema.containsKey(key2)) throw new RuntimeException("key '" + key.x + ", " + key.y + "' not found in condense loop");
                     int count1 = extrema.get(key);
