@@ -341,7 +341,21 @@ public class CrystalAR {
 
     public IntPair[] findCorners(Bitmap image){
         CornerFinder sm = new CornerFinder();
-        IntPair[] corners = sm.findCorners(image);
+        IntPair[] corners = null;
+
+        try {
+            corners = sm.findCorners(image);
+        }
+        catch (NullPointerException e) {
+            Log.e("CrystalAR", e.getMessage());
+        }
+        catch (IllegalArgumentException e) {
+            Log.e("CrystalAR", e.getMessage());
+        }
+        catch (RuntimeException e) {
+            Log.e("CrystalAR", e.getMessage());
+        }
+
         return corners;
     }
 

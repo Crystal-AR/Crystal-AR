@@ -97,6 +97,7 @@ public class CornerFinder {
         int max_val = -100;
         IntPair max_key = null;
         for (IntPair key : keys) {
+            if (!dict.containsKey(key)) System.out.println("find_key_with_largest_value()");
             int val = dict.get(key);
             if (val > max_val) {
                 max_val = val;
@@ -110,9 +111,9 @@ public class CornerFinder {
         return Math.abs((0xFF000000 & x) - (0xFF000000 & y)) / 16777216 + Math.abs((0x00FF0000 & x) - (0x00FF0000 & y)) / 65536 + Math.abs((0x0000FF00 & x) - (0x0000FF00 & y)) / 256;
     }
 
-    public IntPair[] findCorners(Bitmap img) {
+    public IntPair[] findCorners(Bitmap img) throws NullPointerException {
         if (img == null)
-            return new IntPair[0];
+            throw new NullPointerException("findCorners(img) given null for image");
         return findCorners(img, img.getWidth()/2, img.getHeight()/2);
     }
 
@@ -126,13 +127,13 @@ public class CornerFinder {
      * @param img - the bitmap to find the table of
      * @return a set of corner-coordinates
      */
-    public IntPair[] findCorners(Bitmap img, int center_x, int center_y) {
+    public IntPair[] findCorners(Bitmap img, int center_x, int center_y) throws NullPointerException, IllegalArgumentException, RuntimeException {
         if (img == null)
-            return new IntPair[0];
+            throw new NullPointerException("findCorners(img, x, y) given null for image");
         int w = img.getWidth();
         int h = img.getHeight();
         if (w == 0 || h == 0)
-            return new IntPair[0];
+            throw new IllegalArgumentException("findCorners(img, x, y) given empty image");
 
         // compute a 2d array of intensities
         if (intense.length != w * h)
@@ -266,8 +267,10 @@ public class CornerFinder {
         for (double theta = 0; theta < Math.PI/2; theta += 5 * Math.PI/180) {
             IntPair[] set = find_extrema(border_pixels, theta);
             for (int i = 0; i < set.length; ++i) {
-                if (extrema.containsKey(set[i]))
-                    extrema.put(set[i], extrema.get(set[i])+1);
+                if (extrema.containsKey(set[i])) {
+                    if (!extrema.containsKey(set[i])) throw new RuntimeException("key '" + set[i] + ", " + set[i] + "' not found in extrema-finding loop");
+                    extrema.put(set[i], extrema.get(set[i]) + 1);
+                }
                 else
                     extrema.put(set[i], 1);
             }
@@ -282,6 +285,8 @@ public class CornerFinder {
                 if (key == key2)
                     continue;
                 if (dist < 20) {
+                    if (!extrema.containsKey(key)) throw new RuntimeException("key '" + key.x + ", " + key.y + "' not found in condense loop");
+                    if (!extrema.containsKey(key2)) throw new RuntimeException("key '" + key.x + ", " + key.y + "' not found in condense loop");
                     int count1 = extrema.get(key);
                     int count2 = extrema.get(key2);
                     if (count1 > count2) {
@@ -302,6 +307,9 @@ public class CornerFinder {
         for (int i = 0; i < 4; ++i) {
             IntPair corner = find_key_with_largest_value(extrema);
             corners[i] = corner;
+            if (corner == null) {
+                throw new RuntimeException("Only found " + i + " corners");
+            }
             extrema.remove(corner);
         }
 
