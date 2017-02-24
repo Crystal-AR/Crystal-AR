@@ -22,7 +22,7 @@ public class CornerFinder {
                 str += (int) (magic[x][y]/1000);
             }
             str += "\n";
-        }
+        } 
         System.out.println(str);
     }
 
