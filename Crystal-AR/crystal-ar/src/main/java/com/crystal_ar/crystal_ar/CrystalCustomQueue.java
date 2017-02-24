@@ -35,6 +35,7 @@ public class CrystalCustomQueue {
 
     private void resize(int capacity)
     {
+        if (capacity < x_arr.length) return;
         int[] x_tmp = new int[capacity];
 
         for (int i = 0; i < total; i++) {
