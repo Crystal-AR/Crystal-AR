@@ -1,6 +1,7 @@
 package com.crystal_ar.crystal_ar;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.util.Set;
 import java.util.TreeMap;
