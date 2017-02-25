@@ -29,6 +29,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 /*
  * Public class: CrystalAR.
  * This class is the point of access to every feature that Crystal-AR offers.
+ * Properties: n/a.
  * Methods: setLanguage, getPrimitiveString, processImage, getWords, getURLs, getPhoneNumbers,
  *          getEmails, createRect, replaceWithImage, getProcessImageRunnable, findCorners,
  *          findCornersRunnable.
@@ -37,6 +38,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
  * @return n/a.
  */
 public class CrystalAR {
+    // Integers used to differentiate between the results returned by runnables.
     public final static int CORNERS_FOUND = 2;
     public final static int IMAGE_PROCESSED = 1;
 
