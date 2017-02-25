@@ -165,7 +165,7 @@ public class CrystalAR {
             URL url;
             try {
                 potentialURL = word.str;
-                if ((word.str.substring(0, 4)).equals("www.")) {
+                if (word.str.length() > 6 && (word.str.substring(0, 4)).equals("www.")) {
                     potentialURL = "http://" + word.str;
                 }
 
