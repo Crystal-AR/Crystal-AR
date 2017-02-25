@@ -1,6 +1,5 @@
 package com.crystal_ar.crystal_ar;
 
-
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -9,8 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-import android.util.Pair;
 import android.util.Patterns;
 
 import java.io.File;
@@ -22,31 +19,45 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+/*
+ * Public class: CrystalAR.
+ * This class is the point of access to every feature that Crystal-AR offers.
+ * Properties: n/a.
+ * Methods: setLanguage, getPrimitiveString, processImage, getWords, getURLs, getPhoneNumbers,
+ *          getEmails, createRect, replaceWithImage, getProcessImageRunnable, findCorners,
+ *          findCornersRunnable.
+ * @params Context - context of the user's application.
+ * @params Bitmap (optional) - image to process with Tesseract.
+ * @return n/a.
+ */
 public class CrystalAR {
+    // Integers used to differentiate between the results returned by runnables.
     public final static int CORNERS_FOUND = 2;
     public final static int IMAGE_PROCESSED = 1;
 
-    private TessBaseAPI mTess;    //Tess API reference
-    private String datapath = ""; //path to folder containing language data file
-    private String OCRresult;     // result from processImage
-    private Context appContext;      //context of the user's application
-    private Bitmap img;
-    private Word[] words;
-    private ArrayList<Rect> rectList;
-    CornerFinder sm = new CornerFinder();
+    /*
+     * Private variables.
+     */
+    private TessBaseAPI mTess; // Tess API reference.
+    private String datapath = ""; // Path to folder containing language data file.
+    private String OCRresult; // Result from processImage.
+    private Context appContext; // Context of the user's application.
+    private Bitmap img; // Image.
+    private Word[] words; // List of Words found in processed image.
+    private ArrayList<Rect> rectList; // List of rectangles surrounding Words.
+    private CornerFinder cornerFinder = new CornerFinder(); // Object used to find corners.
 
     /*
-     * @param context - context of the user's application: getApplicationContext()
+     * Constructor.
+     * @params Context - context of the user's application: getApplicationContext().
+     * @return n/a.
      */
     public CrystalAR(Context context) {
         appContext = context;
@@ -54,6 +65,12 @@ public class CrystalAR {
         mTess = new TessBaseAPI();
     }
 
+    /*
+     * Constructor.
+     * @params Context - context of the user's application: getApplicationContext().
+     * @params Bitmap - image to be processed.
+     * @return n/a.
+     */
     public CrystalAR(Context context, Bitmap image) {
         appContext = context;
         datapath = appContext.getFilesDir() + "/tesseract/";
@@ -65,10 +82,11 @@ public class CrystalAR {
     }
 
     /*
-    * Sets the language of Tesseract.
-    * @param language - language(s) for Tesseract to track. For multiple languages add a '+'
-    *                   between each language. Example: "eng+deu" for English and German.
-    */
+     * Sets the language of Tesseract.
+     * @params String - language(s) for Tesseract to track. For multiple languages add a '+'
+     *                   between each language. Example: "eng+deu" for English and German.
+     * @return void.
+     */
     public void setLanguage(String language) {
         for (String lang : language.split("\\+")) {
             checkFile(new File(datapath + "tessdata/"), lang);
@@ -76,6 +94,11 @@ public class CrystalAR {
         mTess.init(datapath, language);
     }
 
+    /*
+     * Copies Tesseract language files.
+     * @params String - language to be copied.
+     * @return void.
+     */
     private void copyFile(String lang) {
         try {
             //location we want the file to be at
@@ -106,6 +129,12 @@ public class CrystalAR {
         }
     }
 
+    /*
+     * Checks whether directory and Tesseract language file exists.
+     * @params File - directory containing Tesseract language files.
+     * @params String - language.
+     * @return void.
+     */
     private void checkFile(File dir, String lang) {
         //directory does not exist, but we can successfully create it
         if (!dir.exists() && dir.mkdirs()) {
@@ -121,14 +150,20 @@ public class CrystalAR {
         }
     }
 
+    /*
+     * Gets the raw Tesseract output.
+     * @params n/a.
+     * @return String - raw Tesseract output.
+     */
     public String getPrimitiveString() {
         return OCRresult;
     }
 
     /*
-     * Given an image, this runs Tesseract's main algorithm on it. You MUST run this before calling
-     * any other public methods.
-     * @param image - image to analyze
+     * Given an image, this runs Tesseract's main algorithm on it.
+     * This method MUST be called before calling any other public methods.
+     * @params Bitmap - image to analyze.
+     * @return void.
      */
     public void processImage(Bitmap image) {
         mTess.setImage(image);
@@ -147,6 +182,8 @@ public class CrystalAR {
 
     /*
      * Returns a list of Word classes from the previously processed image
+     * @params n/a.
+     * @return Word[] - Words found by Tesseract.
      */
     public Word[] getWords() {
         Word[] arrayCopy = new Word[words.length];
@@ -156,6 +193,7 @@ public class CrystalAR {
 
     /*
      * Returns a List<Word> with urls from the previously processed image.
+     * @params n/a.
      * @return List<Word> - urls.
      */
     public List<Word> getURLs() {
@@ -181,6 +219,7 @@ public class CrystalAR {
 
     /*
      * Returns an List<Word> with phone numbers from the previously processed image.
+     * @params n/a.
      * @return List<Word> - phone numbers.
      */
     public List<Word> getPhoneNumbers() {
@@ -242,8 +281,8 @@ public class CrystalAR {
 
     /*
      * Creates a Rect surrounding a given List<Word>.
-     * @param List<Word> - Words for which to make a surrounding Rect.
-     * @return Rect that surrounds the list of words.
+     * @params List<Word> - Words for which to make a surrounding Rect.
+     * @return Rect - Rectangle that surrounds the list of words.
      */
     public Rect createRect(List<Word> words) {
         int top = -1;
@@ -275,6 +314,7 @@ public class CrystalAR {
 
     /*
      * Returns an List<Word> with emails from the previously processed image.
+     * @params n/a.
      * @return List<Word> - emails.
      */
     public List<Word> getEmails() {
@@ -285,17 +325,16 @@ public class CrystalAR {
             }
         }
 
-        // Alternative:
-        // Match against simple regex and then check for "proper" emails.
-        // "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+"
-
         return emails;
     }
 
     /*
      * Allows the user to replace a word with a picture
-     * @params: the original image, list of Strings to be replaced, and list of images replacing the words
-     * @return: the modified image
+     *
+     * @params Bitmap - the image to modify.
+     * @params String[] - strings to replace.
+     * @params Bitmap[] - images to replace strings with.
+     * @return: Bitmap - the modified image.
      */
     public Bitmap replaceWithImage(Bitmap image, String[] toReplace, Bitmap[] toAddImages) {
         Bitmap tempPhoto = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight());
@@ -317,6 +356,11 @@ public class CrystalAR {
         return tempPhoto;
     }
 
+    /*
+     * Finds the index of a given string in 'words'.
+     * @params String - string to find the index of.
+     * @return int - index of string in 'words'.
+     */
     private int findIndexOf(String el) {
         for(int i = 0; i < words.length; i++) {
             if (words[i].str.equalsIgnoreCase(el)) {
@@ -326,19 +370,44 @@ public class CrystalAR {
         return -1;
     }
 
+    /*
+     * Creates a runnable for processing an image.
+     * @params Handler - handler that receives the result.
+     * @params Bitmap - image to process.
+     * @return ProcessImageRunnable - runnable.
+     */
     public ProcessImageRunnable getProcessImageRunnable(Handler handler, Bitmap image) {
         return new ProcessImageRunnable(handler, image);
     }
 
+    /*
+     * Private class: ProcessImageRunnable.
+     * This class is a runnable for processing images.
+     * Methods: run.
+     * @params Handler - handler that receives the result.
+     * @params Bitmap - image to process.
+     * @return n/a.
+     */
     private class ProcessImageRunnable implements Runnable {
         Handler handler;
         Bitmap image;
 
+        /*
+         * Constructor.
+         * @params Handler - handler that receives the result.
+         * @params Bitmap - image to process.
+         * @return n/a.
+         */
         public ProcessImageRunnable(Handler handler, Bitmap image) {
             this.handler = handler;
             this.image = image;
         }
 
+        /*
+         * Executes processImage() on the given image and send the result to the handler.
+         * @params n/a.
+         * @return void.
+         */
         public void run() {
             processImage(this.image);
 
@@ -348,10 +417,15 @@ public class CrystalAR {
         }
     }
 
+    /*
+     * Finds corners in an image.
+     * @params Bitmap - image to find corners in.
+     * @return IntPair[] - list of corners.
+     */
     public IntPair[] findCorners(Bitmap image){
         IntPair[] corners = null;
         try {
-            corners = sm.findCorners(image);
+            corners = cornerFinder.findCorners(image);
         }
         catch (NullPointerException e) {
             return new IntPair[0];
@@ -365,10 +439,17 @@ public class CrystalAR {
         return corners;
     }
 
+    /*
+     * Finds corners in an image, assuming that the center of the table is at (cx, cy).
+     * @params Bitmap - image to find corners in.
+     * @params int - x-coordinate of the center of the table.
+     * @params int - y-coordinate of teh center of the table.
+     * @return IntPair[] - list of corners.
+     */
     public IntPair[] findCorners(Bitmap image, int cx, int cy){
         IntPair[] corners = null;
         try {
-            corners = sm.findCorners(image, cx, cy);
+            corners = cornerFinder.findCorners(image, cx, cy);
         }
         catch (NullPointerException e) {
             return new IntPair[0];
@@ -382,10 +463,20 @@ public class CrystalAR {
         return corners;
     }
 
+    /*
+     * Finds corners in an image, assuming that the center of the table is at (cx, cy) and that both
+     * the paint and corner thresholds are met.
+     * @params Bitmap - image to find corners in.
+     * @params int - x-coordinate of the center of the table.
+     * @params int - y-coordinate of teh center of the table.
+     * @params int - paint threshold.
+     * @params int - corner threshold.
+     * @return IntPair[] - list of corners.
+     */
     public IntPair[] findCorners(Bitmap image, int cx, int cy, int paint_threshold, int corner_threshold){
         IntPair[] corners = null;
         try {
-            corners = sm.findCorners(image, cx, cy, paint_threshold, corner_threshold);
+            corners = cornerFinder.findCorners(image, cx, cy, paint_threshold, corner_threshold);
         }
         catch (NullPointerException e) {
             return new IntPair[0];
@@ -399,19 +490,44 @@ public class CrystalAR {
         return corners;
     }
 
+    /*
+     * Creates a runnable for finding corners in an image.
+     * @params Handler - handler that receives the result.
+     * @params Bitmap - image to find corners in.
+     * @return FindCornersRunnable - runnable.
+     */
     public FindCornersRunnable findCornersRunnable(Handler handler, Bitmap image) {
         return new FindCornersRunnable(handler, image);
     }
 
+    /*
+     * Private class: FindCornersRunnable.
+     * This class is a runnable for finding corners.
+     * Methods: run.
+     * @params Handler - handler that receives the result.
+     * @params Bitmap - image to find corners in.
+     * @return n/a.
+     */
     private class FindCornersRunnable implements Runnable {
         Handler handler;
         Bitmap image;
 
+        /*
+         * Constructor.
+         * @params Handler - handler that receives the result.
+         * @params Bitmap - image to process.
+         * @return n/a.
+         */
         public FindCornersRunnable(Handler handler, Bitmap image) {
             this.handler = handler;
             this.image = image;
         }
 
+        /*
+         * Executes findCorners() on the given image and sends the result to the handler.
+         * @params n/a.
+         * @return void.
+         */
         public void run() {
             IntPair[] corners = findCorners(this.image);
 
