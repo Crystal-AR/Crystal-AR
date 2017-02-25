@@ -135,13 +135,13 @@ public class CrystalAR {
         OCRresult = mTess.getUTF8Text();
 
         Pixa p = mTess.getWords();
-        ArrayList<Rect> lst = p.getBoxRects();
+        rectList = p.getBoxRects();
         String[] parts = OCRresult.split("\\s+");
-        words = new Word[lst.size()];
-        for (int i = 0; i < lst.size(); ++i) {
+        words = new Word[rectList.size()];
+        for (int i = 0; i < rectList.size(); ++i) {
             if (i >= parts.length)
                 break;
-            words[i] = new Word(parts[i], lst.get(i));
+            words[i] = new Word(parts[i], rectList.get(i));
         }
     }
 
