@@ -4,7 +4,7 @@ package com.crystal_ar.crystal_ar;
  * Public class: CrystalCustomQueue.
  * Custom queue made for CornerFinder.
  * Properties: n/a.
- * Methods: is_empty, size, get, clear, resize, enqueue, dequeue.
+ * Methods: isEmpty, size, get, clear, resize, enqueue, dequeue.
  * @params n/a.
  * @return n/a.
  */
@@ -30,7 +30,7 @@ public class CrystalCustomQueue {
      * @params n/a.
      * @return boolean - whether the queue is empty or not.
      */
-    public boolean is_empty() {
+    public boolean isEmpty() {
         return total == 0;
     }
 

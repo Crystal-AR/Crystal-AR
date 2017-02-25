@@ -94,7 +94,7 @@ public class CornerFinder {
         pixels_to_look_at.enqueue(center_x, center_y);
         ++magic[w/2][h/2];
         int threshold = this.paint_threshold;
-        while (!pixels_to_look_at.is_empty()) {
+        while (!pixels_to_look_at.isEmpty()) {
             int pixel = pixels_to_look_at.dequeue();
             int pixel_x = pixel / 100000;
             int pixel_y = pixel % 100000;
@@ -159,7 +159,7 @@ public class CornerFinder {
         pixels_to_look_at.clear();
         CrystalCustomQueue border_pixels = new CrystalCustomQueue();
         pixels_to_look_at.enqueue(farthest_point.x, farthest_point.y);
-        while (!pixels_to_look_at.is_empty()) {
+        while (!pixels_to_look_at.isEmpty()) {
             int pixel = pixels_to_look_at.dequeue();
             int x = pixel / 100000;
             int y = pixel % 100000;
