@@ -42,6 +42,7 @@ public class CrystalAR {
     private Bitmap img;
     private Word[] words;
     private ArrayList<Rect> rects;
+    CornerFinder sm = new CornerFinder();
 
     /*
      * @param context - context of the user's application: getApplicationContext()
@@ -326,8 +327,53 @@ public class CrystalAR {
     }
 
     public IntPair[] findCorners(Bitmap image){
-        CornerFinder sm = new CornerFinder();
-        IntPair[] corners = sm.findCorners(image);
+        IntPair[] corners = null;
+        try {
+            corners = sm.findCorners(image);
+        }
+        catch (NullPointerException e) {
+            return new IntPair[0];
+        }
+        catch (IllegalArgumentException e) {
+            return new IntPair[0];
+        }
+        catch (RuntimeException e) {
+            return new IntPair[0];
+        }
+        return corners;
+    }
+
+    public IntPair[] findCorners(Bitmap image, int cx, int cy){
+        IntPair[] corners = null;
+        try {
+            corners = sm.findCorners(image, cx, cy);
+        }
+        catch (NullPointerException e) {
+            return new IntPair[0];
+        }
+        catch (IllegalArgumentException e) {
+            return new IntPair[0];
+        }
+        catch (RuntimeException e) {
+            return new IntPair[0];
+        }
+        return corners;
+    }
+
+    public IntPair[] findCorners(Bitmap image, int cx, int cy, int paint_threshold, int corner_threshold){
+        IntPair[] corners = null;
+        try {
+            corners = sm.findCorners(image, cx, cy, paint_threshold, corner_threshold);
+        }
+        catch (NullPointerException e) {
+            return new IntPair[0];
+        }
+        catch (IllegalArgumentException e) {
+            return new IntPair[0];
+        }
+        catch (RuntimeException e) {
+            return new IntPair[0];
+        }
         return corners;
     }
 
