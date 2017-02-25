@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
@@ -41,7 +42,7 @@ public class CrystalAR {
     private Context appContext;      //context of the user's application
     private Bitmap img;
     private Word[] words;
-    private ArrayList<Rect> rects;
+    private ArrayList<Rect> rectList;
     CornerFinder sm = new CornerFinder();
 
     /*
@@ -159,10 +160,16 @@ public class CrystalAR {
      */
     public List<Word> getURLs() {
         List<Word> urlsFound = new ArrayList<Word>();
+        String potentialURL;
         for (Word word : words) {
             URL url;
             try {
-                url = new URL(word.str);
+                potentialURL = word.str;
+                if ((word.str.substring(0, 4)).equals("www.")) {
+                    potentialURL = "http://" + word.str;
+                }
+
+                url = new URL(potentialURL);
                 urlsFound.add(word);
             } catch (MalformedURLException e) {
                 // skip this -- should probably handle this somehow...
@@ -291,17 +298,32 @@ public class CrystalAR {
      * @return: the modified image
      */
     public Bitmap replaceWithImage(Bitmap image, String[] toReplace, Bitmap[] toAddImages) {
-        Bitmap newImg = image;
-        int index = -1, i;
-        Canvas canvas = new Canvas(newImg);
-//            for(i=0; i< toReplace.length; i++) {
-//                index = words.indexOf(toReplace[i]);
-//                if (index != -1) {
-//                    canvas.drawBitmap(toAddImages[i], null, rects[index], null);
-//                    OCRresult = OCRresult.replaceFirst(word, "  "); //replace with two blank spaces.
-//                }
-//            }
-        return newImg;
+        Bitmap tempPhoto = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight());
+        Canvas canvas = new Canvas(tempPhoto);
+        // Draw the image bitmap into the canvas.
+        Paint p = new Paint();
+        p.setARGB(255, 255, 255, 255);
+        canvas.drawBitmap(tempPhoto, 0, 0, null);
+        int index;
+        for(int i = 0; i < toReplace.length; i++) {
+            index = findIndexOf(toReplace[i]);
+            if (index != -1) {
+                canvas.drawRect(rectList.get(index), p);
+                canvas.drawBitmap(toAddImages[i], null, rectList.get(index), null);
+                // replace with two blank spaces.
+                OCRresult = OCRresult.replaceFirst(toReplace[i], "  ");
+            }
+        }
+        return tempPhoto;
+    }
+
+    private int findIndexOf(String el) {
+        for(int i = 0; i < words.length; i++) {
+            if (words[i].str.equalsIgnoreCase(el)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public ProcessImageRunnable getProcessImageRunnable(Handler handler, Bitmap image) {
