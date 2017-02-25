@@ -100,7 +100,7 @@ public class CornerFinder {
             int pixel_y = pixel % 100000;
             if (pixel_x != 0) {
 
-                if (compute_pixel_diff(intense[(pixel_x-1) + pixel_y * w], intense[pixel_x + pixel_y * w]) < threshold) {
+                if (computePixelDiff(intense[(pixel_x-1) + pixel_y * w], intense[pixel_x + pixel_y * w]) < threshold) {
                     if (magic[pixel_x-1][pixel_y] < 1) {
                         ++magic[pixel_x-1][pixel_y];
                         pixels_to_look_at.enqueue(pixel_x-1, pixel_y);
@@ -108,7 +108,7 @@ public class CornerFinder {
                 }
             }
             if (pixel_y != 0) {
-                if (compute_pixel_diff(intense[pixel_x + (pixel_y-1) * w], intense[pixel_x + pixel_y * w]) < threshold) {
+                if (computePixelDiff(intense[pixel_x + (pixel_y-1) * w], intense[pixel_x + pixel_y * w]) < threshold) {
                     if (magic[pixel_x][pixel_y-1] < 1) {
                         ++magic[pixel_x][pixel_y-1];
                         pixels_to_look_at.enqueue(pixel_x, pixel_y-1);
@@ -116,7 +116,7 @@ public class CornerFinder {
                 }
             }
             if (pixel_x != w - 1) {
-                if (compute_pixel_diff(intense[(pixel_x+1) + pixel_y * w], intense[pixel_x + pixel_y * w]) < threshold) {
+                if (computePixelDiff(intense[(pixel_x+1) + pixel_y * w], intense[pixel_x + pixel_y * w]) < threshold) {
                     if (magic[pixel_x+1][pixel_y] < 1) {
                         ++magic[pixel_x+1][pixel_y];
                         pixels_to_look_at.enqueue(pixel_x+1, pixel_y);
@@ -124,7 +124,7 @@ public class CornerFinder {
                 }
             }
             if (pixel_y != h - 1) {
-                if (compute_pixel_diff(intense[pixel_x + (pixel_y+1) * w], intense[pixel_x + pixel_y * w]) < threshold) {
+                if (computePixelDiff(intense[pixel_x + (pixel_y+1) * w], intense[pixel_x + pixel_y * w]) < threshold) {
                     if (magic[pixel_x][pixel_y+1] < 1) {
                         ++magic[pixel_x][pixel_y+1];
                         pixels_to_look_at.enqueue(pixel_x, pixel_y+1);
@@ -204,7 +204,7 @@ public class CornerFinder {
         // find the most extreme pixels over various rotations of the coordinate actions
         TreeMap<IntPair, Integer> extrema = new TreeMap<IntPair, Integer>();
         for (double theta = 0; theta < Math.PI/2; theta += 5 * Math.PI/180) {
-            IntPair[] set = find_extrema(border_pixels, theta);
+            IntPair[] set = findExtrema(border_pixels, theta);
             for (int i = 0; i < set.length; ++i) {
                 if (extrema.containsKey(set[i])) {
                     if (!extrema.containsKey(set[i])) throw new RuntimeException("key '" + set[i] + ", " + set[i] + "' not found in extrema-finding loop");
@@ -244,7 +244,7 @@ public class CornerFinder {
         // create set to return, and return it
         IntPair[] corners = new IntPair[4];
         for (int i = 0; i < 4; ++i) {
-            IntPair corner = find_key_with_largest_value(extrema);
+            IntPair corner = findKeyWithLargestValue(extrema);
             corners[i] = corner;
             if (corner == null) throw new RuntimeException("Only found " + i + " corners");
             if (!extrema.containsKey(corner)) throw new RuntimeException("The 'found' corner is not in the extrema dictionary");
@@ -277,7 +277,7 @@ public class CornerFinder {
      * @params int - step.
      * @return void.
      */
-    private void print_magic(int[][] magic, int step) {
+    private void printMagic(int[][] magic, int step) {
         String str = "";
         System.out.println(magic.length + " : " + step);
         for (int y = 0; y < magic[0].length; y += step) {
@@ -297,7 +297,7 @@ public class CornerFinder {
      * @params double - angle of the "x-axis".
      * @return IntPair[] - 4 extrema.
      */
-    private IntPair[] find_extrema(CrystalCustomQueue borders, double theta) {
+    private IntPair[] findExtrema(CrystalCustomQueue borders, double theta) {
         double cos = Math.cos(theta);
         double sin = Math.sin(theta);
         double adj;
@@ -354,12 +354,12 @@ public class CornerFinder {
      * @params TreeMap - the dictionary to search.
      * @return IntPair - the key whose value is the maximum.
      */
-    private IntPair find_key_with_largest_value(TreeMap<IntPair, Integer> dict) {
+    private IntPair findKeyWithLargestValue(TreeMap<IntPair, Integer> dict) {
         Set<IntPair> keys = dict.keySet();
         int max_val = -100;
         IntPair max_key = null;
         for (IntPair key : keys) {
-            if (!dict.containsKey(key)) throw new RuntimeException("find_key_with_largest_value given no keys");
+            if (!dict.containsKey(key)) throw new RuntimeException("findKeyWithLargestValue given no keys");
             int val = dict.get(key);
             if (val > max_val) {
                 max_val = val;
@@ -375,7 +375,7 @@ public class CornerFinder {
      * @params int - second pixel.
      * @return int - pixel difference.
      */
-    private int compute_pixel_diff(int x, int y) {
+    private int computePixelDiff(int x, int y) {
         return Math.abs((0xFF000000 & x) - (0xFF000000 & y)) / 16777216 + Math.abs((0x00FF0000 & x) - (0x00FF0000 & y)) / 65536 + Math.abs((0x0000FF00 & x) - (0x0000FF00 & y)) / 256;
     }
 }
