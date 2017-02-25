@@ -1,7 +1,6 @@
 package com.crystal_ar.crystal_ar;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import java.util.Set;
 import java.util.TreeMap;
@@ -19,6 +18,9 @@ import java.util.TreeMap;
  * @return n/a.
  */
 public class CornerFinder {
+    /*
+     * Private variables.
+     */
     private int[] intense = new int[1];
     private int[][] magic = new int[1][1];
     private CrystalCustomQueue pixels_to_look_at = new CrystalCustomQueue();
@@ -291,8 +293,8 @@ public class CornerFinder {
      * This function takes a list of border pixels and a theta.
      * It then rotates the coordinate axes by theta, and finds the points with the smallest and
      * largest points in terms of their (rotated) x- and y- coordinates.
-     * @params CrystalCustomQueue - borders: 2d array in which 2 is a "point" in the set.
-     * @params double - theta: angle of the "x-axis".
+     * @params CrystalCustomQueue - 2d array in which 2 is a "point" in the set.
+     * @params double - angle of the "x-axis".
      * @return IntPair[] - 4 extrema.
      */
     private IntPair[] find_extrema(CrystalCustomQueue borders, double theta) {
@@ -352,7 +354,7 @@ public class CornerFinder {
      * @params TreeMap - the dictionary to search.
      * @return IntPair - the key whose value is the maximum.
      */
-    IntPair find_key_with_largest_value(TreeMap<IntPair, Integer> dict) {
+    private IntPair find_key_with_largest_value(TreeMap<IntPair, Integer> dict) {
         Set<IntPair> keys = dict.keySet();
         int max_val = -100;
         IntPair max_key = null;

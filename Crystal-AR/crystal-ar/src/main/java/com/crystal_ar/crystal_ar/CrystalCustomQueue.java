@@ -10,6 +10,9 @@ package com.crystal_ar.crystal_ar;
  */
 public class CrystalCustomQueue {
 
+    /*
+     * Private variables.
+     */
     private int[] x_arr;
     private int total, first, next;
 

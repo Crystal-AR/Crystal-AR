@@ -42,6 +42,9 @@ public class CrystalAR {
     public final static int CORNERS_FOUND = 2;
     public final static int IMAGE_PROCESSED = 1;
 
+    /*
+     * Private variables.
+     */
     private TessBaseAPI mTess; // Tess API reference.
     private String datapath = ""; // Path to folder containing language data file.
     private String OCRresult; // Result from processImage.
@@ -49,7 +52,7 @@ public class CrystalAR {
     private Bitmap img; // Image.
     private Word[] words; // List of Words found in processed image.
     private ArrayList<Rect> rectList; // List of rectangles surrounding Words.
-    CornerFinder cornerFinder = new CornerFinder(); // Object used to find corners.
+    private CornerFinder cornerFinder = new CornerFinder(); // Object used to find corners.
 
     /*
      * Constructor.
