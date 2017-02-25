@@ -82,7 +82,7 @@ public class CrystalAR {
      * Sets the language of Tesseract.
      * @params String - language(s) for Tesseract to track. For multiple languages add a '+'
      *                   between each language. Example: "eng+deu" for English and German.
-     * @return n/a.
+     * @return void.
      */
     public void setLanguage(String language) {
         for (String lang : language.split("\\+")) {
@@ -94,7 +94,7 @@ public class CrystalAR {
     /*
      * Copies Tesseract language files.
      * @params String - language to be copied.
-     * @return n/a.
+     * @return void.
      */
     private void copyFile(String lang) {
         try {
@@ -130,7 +130,7 @@ public class CrystalAR {
      * Checks whether directory and Tesseract language file exists.
      * @params File - directory containing Tesseract language files.
      * @params String - language.
-     * @return n/a.
+     * @return void.
      */
     private void checkFile(File dir, String lang) {
         //directory does not exist, but we can successfully create it
@@ -160,7 +160,7 @@ public class CrystalAR {
      * Given an image, this runs Tesseract's main algorithm on it.
      * This method MUST be called before calling any other public methods.
      * @params Bitmap - image to analyze.
-     * @return n/a.
+     * @return void.
      */
     public void processImage(Bitmap image) {
         mTess.setImage(image);
@@ -403,7 +403,7 @@ public class CrystalAR {
         /*
          * Executes processImage() on the given image and send the result to the handler.
          * @params n/a.
-         * @return n/a.
+         * @return void.
          */
         public void run() {
             processImage(this.image);
@@ -523,7 +523,7 @@ public class CrystalAR {
         /*
          * Executes findCorners() on the given image and sends the result to the handler.
          * @params n/a.
-         * @return n/a.
+         * @return void.
          */
         public void run() {
             IntPair[] corners = findCorners(this.image);
