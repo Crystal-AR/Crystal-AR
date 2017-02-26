@@ -22,7 +22,6 @@ public class CornerFinder {
      * Private variables.
      */
     private int[] intense = new int[1];
-    private int[][] magic = new int[1][1];
     private CrystalCustomQueue pixels_to_look_at = new CrystalCustomQueue();
 
     /*
@@ -85,8 +84,7 @@ public class CornerFinder {
          * 4      looked at
          * 5      (good) edge
          */
-        if (magic.length != w || magic[0].length != h)
-            magic = new int[w][h];
+        int[][] magic = new int[w][h];
         img.getPixels(intense, 0, w, 0, 0, w, h);
 
         // "paint" the table
